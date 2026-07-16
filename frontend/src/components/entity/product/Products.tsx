@@ -3,17 +3,13 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../api/config';
 import { useTheme } from '../../../context/ThemeContext';
+import { useCart } from '../../../context/useCart';
+import { CartProduct } from '../../../context/cartTypes';
 
-interface Product {
-  productId: number;
-  name: string;
-  description: string;
-  price: number;
-  imgName: string;
+interface Product extends CartProduct {
   sku: string;
   unit: string;
   supplierId: number;
-  discount?: number;
 }
 
 const fetchProducts = async (): Promise<Product[]> => {
@@ -28,6 +24,7 @@ export default function Products() {
   const [showModal, setShowModal] = useState(false);
   const { data: products, isPending, error } = useQuery({ queryKey: ['products'], queryFn: fetchProducts });
   const { darkMode } = useTheme();
+  const { addItem } = useCart();
 
   const filteredProducts = products?.filter(
     (product) =>
@@ -50,15 +47,18 @@ export default function Products() {
   };
 
   const handleAddToCart = (productId: number) => {
+    const product = products?.find((item) => item.productId === productId);
     const quantity = quantities[productId] || 0;
-    if (quantity > 0) {
-      // TODO: Implement cart functionality
-      alert(`Added ${quantity} items to cart`);
-      setQuantities((prev) => ({
-        ...prev,
-        [productId]: 0,
-      }));
+
+    if (!product || quantity <= 0) {
+      return;
     }
+
+    addItem(product, quantity);
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]: 0,
+    }));
   };
 
   const handleProductClick = (product: Product) => {
