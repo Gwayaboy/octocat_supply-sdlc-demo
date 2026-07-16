@@ -5,6 +5,7 @@
 import { getDatabase, DatabaseConnection } from '../db/sqlite';
 import { Delivery } from '../models/delivery';
 import { handleDatabaseError, NotFoundError } from '../utils/errors';
+import { isTestEnvironment } from '../utils/environment';
 import { buildInsertSQL, buildUpdateSQL, objectToCamelCase, mapDatabaseRows, DatabaseRow } from '../utils/sql';
 
 export class DeliveriesRepository {
@@ -181,8 +182,7 @@ let deliveriesRepo: DeliveriesRepository | null = null;
 export async function getDeliveriesRepository(
   isTest: boolean = false,
 ): Promise<DeliveriesRepository> {
-  const isTestEnv = isTest || process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
-  if (isTestEnv) {
+  if (isTestEnvironment(isTest)) {
     return createDeliveriesRepository(true);
   }
   if (!deliveriesRepo) {

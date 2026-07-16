@@ -5,6 +5,7 @@
 import { getDatabase, DatabaseConnection } from '../db/sqlite';
 import { Headquarters } from '../models/headquarters';
 import { handleDatabaseError, NotFoundError } from '../utils/errors';
+import { isTestEnvironment } from '../utils/environment';
 import { buildInsertSQL, buildUpdateSQL, objectToCamelCase, mapDatabaseRows, DatabaseRow } from '../utils/sql';
 
 export class HeadquartersRepository {
@@ -145,6 +146,9 @@ let headquartersRepo: HeadquartersRepository | null = null;
 export async function getHeadquartersRepository(
   isTest: boolean = false,
 ): Promise<HeadquartersRepository> {
+  if (isTestEnvironment(isTest)) {
+    return createHeadquartersRepository(true);
+  }
   if (!headquartersRepo) {
     headquartersRepo = await createHeadquartersRepository(isTest);
   }

@@ -5,6 +5,7 @@
 import { getDatabase, DatabaseConnection } from '../db/sqlite';
 import { Product } from '../models/product';
 import { handleDatabaseError, NotFoundError } from '../utils/errors';
+import { isTestEnvironment } from '../utils/environment';
 import { buildInsertSQL, buildUpdateSQL, objectToCamelCase, mapDatabaseRows, DatabaseRow } from '../utils/sql';
 
 export class ProductsRepository {
@@ -152,6 +153,9 @@ export async function createProductsRepository(
 let productsRepo: ProductsRepository | null = null;
 
 export async function getProductsRepository(isTest: boolean = false): Promise<ProductsRepository> {
+  if (isTestEnvironment(isTest)) {
+    return createProductsRepository(true);
+  }
   if (!productsRepo) {
     productsRepo = await createProductsRepository(isTest);
   }

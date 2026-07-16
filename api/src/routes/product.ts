@@ -147,9 +147,9 @@ router.get('/:id', async (req, res, next) => {
 router.get('/name/:name', async (req, res, next) => {
   try {
     const repo = await getProductsRepository();
-    const product = await repo.findByName(req.params.name);
-    if (product) {
-      res.json(product);
+    const products = await repo.findByName(req.params.name);
+    if (products.length > 0) {
+      res.json(products);
     } else {
       res.status(404).send('Product not found');
     }

@@ -214,7 +214,7 @@ router.put('/:id', async (req, res, next) => {
     const repo = await getHeadquartersRepository();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const hqValidator = (HeadquartersValidator as any)(req.body.name, req.body.address);
+    const hqValidator = new (HeadquartersValidator as any)(req.body.name, req.body.address);
     if (!hqValidator.isValid()) {
       res.status(400).send('Invalid headquarters data');
       return;

@@ -5,6 +5,7 @@
 import { getDatabase, DatabaseConnection } from '../db/sqlite';
 import { OrderDetail } from '../models/orderDetail';
 import { handleDatabaseError, NotFoundError } from '../utils/errors';
+import { isTestEnvironment } from '../utils/environment';
 import { buildInsertSQL, buildUpdateSQL, objectToCamelCase, mapDatabaseRows, DatabaseRow } from '../utils/sql';
 
 export class OrderDetailsRepository {
@@ -175,6 +176,9 @@ let orderDetailsRepo: OrderDetailsRepository | null = null;
 export async function getOrderDetailsRepository(
   isTest: boolean = false,
 ): Promise<OrderDetailsRepository> {
+  if (isTestEnvironment(isTest)) {
+    return createOrderDetailsRepository(true);
+  }
   if (!orderDetailsRepo) {
     orderDetailsRepo = await createOrderDetailsRepository(isTest);
   }

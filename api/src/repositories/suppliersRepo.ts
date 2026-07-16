@@ -5,6 +5,7 @@
 import { getDatabase, DatabaseConnection } from '../db/sqlite';
 import { Supplier } from '../models/supplier';
 import { handleDatabaseError, NotFoundError } from '../utils/errors';
+import { isTestEnvironment } from '../utils/environment';
 import { buildInsertSQL, buildUpdateSQL, objectToCamelCase, mapDatabaseRows, DatabaseRow } from '../utils/sql';
 
 export class SuppliersRepository {
@@ -50,11 +51,26 @@ export class SuppliersRepository {
   }
 
   /**
+   * Convert boolean fields to integers for SQLite writes.
+   * SQLite bindings in this codebase expect primitive number/string values,
+   * so route payload booleans are normalized before INSERT/UPDATE statements.
+   */
+  private convertBooleanFieldsForWrite(
+    supplier: Partial<Omit<Supplier, 'supplierId'>>,
+  ): Record<string, unknown> {
+    return {
+      ...supplier,
+      ...(supplier.active !== undefined ? { active: Number(supplier.active) } : {}),
+      ...(supplier.verified !== undefined ? { verified: Number(supplier.verified) } : {}),
+    };
+  }
+
+  /**
    * Create a new supplier
    */
   async create(supplier: Omit<Supplier, 'supplierId'>): Promise<Supplier> {
     try {
-      const { sql, values } = buildInsertSQL('suppliers', supplier);
+      const { sql, values } = buildInsertSQL('suppliers', this.convertBooleanFieldsForWrite(supplier));
       const result = await this.db.run(sql, values);
 
       const createdSupplier = await this.findById(result.lastID || 0);
@@ -73,7 +89,11 @@ export class SuppliersRepository {
    */
   async update(id: number, supplier: Partial<Omit<Supplier, 'supplierId'>>): Promise<Supplier> {
     try {
-      const { sql, values } = buildUpdateSQL('suppliers', supplier, 'supplier_id = ?');
+      const { sql, values } = buildUpdateSQL(
+        'suppliers',
+        this.convertBooleanFieldsForWrite(supplier),
+        'supplier_id = ?',
+      );
       const result = await this.db.run(sql, [...values, id]);
 
       if (result.changes === 0) {
@@ -151,8 +171,7 @@ let suppliersRepo: SuppliersRepository | null = null;
 export async function getSuppliersRepository(
   isTest: boolean = false,
 ): Promise<SuppliersRepository> {
-  const isTestEnv = isTest || process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
-  if (isTestEnv) {
+  if (isTestEnvironment(isTest)) {
     return createSuppliersRepository(true);
   }
   if (!suppliersRepo) {

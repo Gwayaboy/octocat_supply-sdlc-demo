@@ -5,6 +5,7 @@
 import { getDatabase, DatabaseConnection } from '../db/sqlite';
 import { Order } from '../models/order';
 import { handleDatabaseError, NotFoundError } from '../utils/errors';
+import { isTestEnvironment } from '../utils/environment';
 import { buildInsertSQL, buildUpdateSQL, objectToCamelCase, mapDatabaseRows, DatabaseRow } from '../utils/sql';
 
 export class OrdersRepository {
@@ -166,8 +167,7 @@ export async function createOrdersRepository(isTest: boolean = false): Promise<O
 let ordersRepo: OrdersRepository | null = null;
 
 export async function getOrdersRepository(isTest: boolean = false): Promise<OrdersRepository> {
-  const isTestEnv = isTest || process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
-  if (isTestEnv) {
+  if (isTestEnvironment(isTest)) {
     return createOrdersRepository(true);
   }
   if (!ordersRepo) {

@@ -5,6 +5,7 @@
 import { getDatabase, DatabaseConnection } from '../db/sqlite';
 import { Branch } from '../models/branch';
 import { handleDatabaseError, NotFoundError } from '../utils/errors';
+import { isTestEnvironment } from '../utils/environment';
 import { buildInsertSQL, buildUpdateSQL, objectToCamelCase, mapDatabaseRows, DatabaseRow } from '../utils/sql';
 
 export class BranchesRepository {
@@ -153,8 +154,7 @@ export async function createBranchesRepository(
 let branchesRepo: BranchesRepository | null = null;
 
 export async function getBranchesRepository(isTest: boolean = false): Promise<BranchesRepository> {
-  const isTestEnv = isTest || process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
-  if (isTestEnv) {
+  if (isTestEnvironment(isTest)) {
     // In tests, always return a fresh repository bound to the current in-memory DB
     return createBranchesRepository(true);
   }
