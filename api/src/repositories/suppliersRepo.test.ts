@@ -205,5 +205,19 @@ describe('SuppliersRepository', () => {
             expect(result).toHaveLength(1);
             expect(result[0].name).toBe('Test Supplier');
         });
+
+        it('should throw when the database query fails', async () => {
+            mockDb.all.mockRejectedValue(new Error('DB error'));
+
+            await expect(repository.findByName('Test')).rejects.toThrow();
+        });
+    });
+
+    describe('exists error path', () => {
+        it('should throw when the database query fails', async () => {
+            mockDb.get.mockRejectedValue(new Error('DB error'));
+
+            await expect(repository.exists(1)).rejects.toThrow();
+        });
     });
 });

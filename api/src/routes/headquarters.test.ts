@@ -146,4 +146,48 @@ describe('Headquarters API', () => {
 
     expect(response.status).toBe(404);
   });
+
+  it('gets headquarters label', async () => {
+    const createResponse = await createHeadquarters();
+
+    const response = await request(app).get(`/headquarters/${createResponse.body.headquartersId}/label`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('label');
+  });
+
+  it('returns 500 when the database fails on PUT', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE headquarters');
+    const response = await request(app).put('/headquarters/1').send({ ...headquartersPayload, name: 'Updated HQ' });
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on DELETE', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE headquarters');
+    const response = await request(app).delete('/headquarters/1');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on POST', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE headquarters');
+    const response = await request(app).post('/headquarters').send(headquartersPayload);
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET all', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE headquarters');
+    const response = await request(app).get('/headquarters');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET by ID', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE headquarters');
+    const response = await request(app).get('/headquarters/1');
+    expect(response.status).toBe(500);
+  });
 });

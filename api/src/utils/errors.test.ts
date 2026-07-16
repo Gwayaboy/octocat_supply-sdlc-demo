@@ -108,6 +108,11 @@ describe('handleDatabaseError', () => {
     const original = new NotFoundError('Branch', 1);
     expect(() => handleDatabaseError(original)).toThrow(NotFoundError);
   });
+
+  it('throws NotFoundError when message includes "No rows affected" with entity and id', () => {
+    const err = new DatabaseError('No rows affected', 'DATABASE_ERROR', 500);
+    expect(() => handleDatabaseError(err, 'Branch', 1)).toThrow(NotFoundError);
+  });
 });
 
 describe('errorHandler middleware', () => {

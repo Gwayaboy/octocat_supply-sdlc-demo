@@ -121,4 +121,14 @@ describe('HeadquartersRepository', () => {
 
     expect(headquarters.map((item) => item.name)).toEqual(['Alpha Campus', 'Gamma Campus']);
   });
+
+  it('findByName throws when the table is missing', async () => {
+    await db.run('DROP TABLE headquarters');
+    await expect(repository.findByName('test')).rejects.toThrow();
+  });
+
+  it('exists throws when the table is missing', async () => {
+    await db.run('DROP TABLE headquarters');
+    await expect(repository.exists(1)).rejects.toThrow();
+  });
 });

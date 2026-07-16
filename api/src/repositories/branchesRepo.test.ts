@@ -136,4 +136,19 @@ describe('BranchesRepository', () => {
 
     expect(branches.map((branch) => branch.name)).toEqual(['Alpha Office', 'Gamma Office']);
   });
+
+  it('findByHeadquartersId throws when the table is missing', async () => {
+    await db.run('DROP TABLE branches');
+    await expect(repository.findByHeadquartersId(1)).rejects.toThrow();
+  });
+
+  it('findByName throws when the table is missing', async () => {
+    await db.run('DROP TABLE branches');
+    await expect(repository.findByName('test')).rejects.toThrow();
+  });
+
+  it('exists throws when the table is missing', async () => {
+    await db.run('DROP TABLE branches');
+    await expect(repository.exists(1)).rejects.toThrow();
+  });
 });

@@ -177,4 +177,19 @@ describe('OrderDetailDeliveriesRepository', () => {
     await expect(repository.getTotalQuantityByOrderDetailId(1)).resolves.toBe(7);
     await expect(repository.getTotalQuantityByOrderDetailId(999)).resolves.toBe(0);
   });
+
+  it('findByOrderDetailId throws when the table is missing', async () => {
+    await db.run('DROP TABLE order_detail_deliveries');
+    await expect(repository.findByOrderDetailId(1)).rejects.toThrow();
+  });
+
+  it('findByDeliveryId throws when the table is missing', async () => {
+    await db.run('DROP TABLE order_detail_deliveries');
+    await expect(repository.findByDeliveryId(1)).rejects.toThrow();
+  });
+
+  it('exists throws when the table is missing', async () => {
+    await db.run('DROP TABLE order_detail_deliveries');
+    await expect(repository.exists(1)).rejects.toThrow();
+  });
 });

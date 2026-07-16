@@ -159,4 +159,19 @@ describe('ProductsRepository', () => {
 
     expect(products.map((product) => product.name)).toEqual(['Alpha Widget', 'Gamma Widget']);
   });
+
+  it('findBySupplierId throws when the table is missing', async () => {
+    await db.run('DROP TABLE products');
+    await expect(repository.findBySupplierId(1)).rejects.toThrow();
+  });
+
+  it('findByName throws when the table is missing', async () => {
+    await db.run('DROP TABLE products');
+    await expect(repository.findByName('test')).rejects.toThrow();
+  });
+
+  it('exists throws when the table is missing', async () => {
+    await db.run('DROP TABLE products');
+    await expect(repository.exists(1)).rejects.toThrow();
+  });
 });

@@ -143,4 +143,39 @@ describe('Order Detail Delivery API', () => {
 
     expect(response.status).toBe(404);
   });
+
+  it('returns 500 when the database fails on PUT', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE order_detail_deliveries');
+    const response = await request(app).put('/order-detail-deliveries/1').send({ orderDetailId: 1, deliveryId: 1, quantity: 1 });
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on DELETE', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE order_detail_deliveries');
+    const response = await request(app).delete('/order-detail-deliveries/1');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on POST', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE order_detail_deliveries');
+    const response = await request(app).post('/order-detail-deliveries').send({ orderDetailId: 1, deliveryId: 1, quantity: 1 });
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET all', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE order_detail_deliveries');
+    const response = await request(app).get('/order-detail-deliveries');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET by ID', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE order_detail_deliveries');
+    const response = await request(app).get('/order-detail-deliveries/1');
+    expect(response.status).toBe(500);
+  });
 });

@@ -160,4 +160,24 @@ describe('OrdersRepository', () => {
 
     expect(orders.map((order) => order.name)).toEqual(['In Range Two', 'In Range One']);
   });
+
+  it('findByBranchId throws when the table is missing', async () => {
+    await db.run('DROP TABLE orders');
+    await expect(repository.findByBranchId(1)).rejects.toThrow();
+  });
+
+  it('findByStatus throws when the table is missing', async () => {
+    await db.run('DROP TABLE orders');
+    await expect(repository.findByStatus('pending')).rejects.toThrow();
+  });
+
+  it('findByDateRange throws when the table is missing', async () => {
+    await db.run('DROP TABLE orders');
+    await expect(repository.findByDateRange('2024-01-01', '2024-12-31')).rejects.toThrow();
+  });
+
+  it('exists throws when the table is missing', async () => {
+    await db.run('DROP TABLE orders');
+    await expect(repository.exists(1)).rejects.toThrow();
+  });
 });

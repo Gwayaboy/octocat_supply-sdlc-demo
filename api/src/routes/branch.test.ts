@@ -135,4 +135,43 @@ describe('Branch API', () => {
     const response = await request(app).delete('/branches/999');
     expect(response.status).toBe(404);
   });
+
+  it('returns 500 when the database fails on PUT', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE branches');
+    const response = await request(app).put('/branches/1').send({
+      headquartersId: 1, name: 'X', description: '', address: '', contactPerson: '', email: 'x@x.com', phone: '',
+    });
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on DELETE', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE branches');
+    const response = await request(app).delete('/branches/1');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on POST', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE branches');
+    const response = await request(app).post('/branches').send({
+      headquartersId: 1, name: 'X', description: '', address: '', contactPerson: '', email: 'x@x.com', phone: '',
+    });
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET all', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE branches');
+    const response = await request(app).get('/branches');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET by ID', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE branches');
+    const response = await request(app).get('/branches/1');
+    expect(response.status).toBe(500);
+  });
 });

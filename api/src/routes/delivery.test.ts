@@ -144,4 +144,39 @@ describe('Delivery API', () => {
 
     expect(response.status).toBe(500);
   });
+
+  it('returns 500 when the database fails on PUT', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE deliveries');
+    const response = await request(app).put('/deliveries/1').send(deliveryPayload);
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on DELETE', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE deliveries');
+    const response = await request(app).delete('/deliveries/1');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on POST', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE deliveries');
+    const response = await request(app).post('/deliveries').send(deliveryPayload);
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET all', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE deliveries');
+    const response = await request(app).get('/deliveries');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET by ID', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE deliveries');
+    const response = await request(app).get('/deliveries/1');
+    expect(response.status).toBe(500);
+  });
 });

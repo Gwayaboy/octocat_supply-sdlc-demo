@@ -166,4 +166,24 @@ describe('DeliveriesRepository', () => {
 
     expect(delivery.status).toBe('delivered');
   });
+
+  it('findBySupplierId throws when the table is missing', async () => {
+    await db.run('DROP TABLE deliveries');
+    await expect(repository.findBySupplierId(1)).rejects.toThrow();
+  });
+
+  it('findByStatus throws when the table is missing', async () => {
+    await db.run('DROP TABLE deliveries');
+    await expect(repository.findByStatus('pending')).rejects.toThrow();
+  });
+
+  it('findByDateRange throws when the table is missing', async () => {
+    await db.run('DROP TABLE deliveries');
+    await expect(repository.findByDateRange('2024-01-01', '2024-12-31')).rejects.toThrow();
+  });
+
+  it('exists throws when the table is missing', async () => {
+    await db.run('DROP TABLE deliveries');
+    await expect(repository.exists(1)).rejects.toThrow();
+  });
 });

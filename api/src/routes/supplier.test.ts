@@ -125,4 +125,39 @@ describe('Supplier API', () => {
 
     expect(response.status).toBe(404);
   });
+
+  it('returns 500 when the database fails on PUT', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE suppliers');
+    const response = await request(app).put('/suppliers/1').send({ ...supplierPayload, name: 'Updated' });
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on DELETE', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE suppliers');
+    const response = await request(app).delete('/suppliers/1');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on POST', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE suppliers');
+    const response = await request(app).post('/suppliers').send(supplierPayload);
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET all', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE suppliers');
+    const response = await request(app).get('/suppliers');
+    expect(response.status).toBe(500);
+  });
+
+  it('returns 500 when the database fails on GET by ID', async () => {
+    const db = await getDatabase();
+    await db.run('DROP TABLE suppliers');
+    const response = await request(app).get('/suppliers/1');
+    expect(response.status).toBe(500);
+  });
 });
