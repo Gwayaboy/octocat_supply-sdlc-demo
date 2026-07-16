@@ -82,4 +82,32 @@ After implementation, users should be able to:
 - Ensure styling works for both Dark and Light modes
 - Handle edge cases (empty cart, etc.)
 
+## Azure DevOps association
+
+This work implements Azure DevOps User Story **AB#25**
+(https://dev.azure.com/ADODemoOrgFY27/KCLSDLCDemo/_workitems/edit/25).
+
+Delivery contract (must be followed so Azure Boards auto-links the change back to the work item):
+
+- Create a topic branch named `feature/ab25-cart-page` (do NOT push directly to `main`; the `main` ruleset requires a pull request).
+- Every commit message MUST include the trailer `AB#25` on its own line at the end of the message body. Example:
+
+  ```
+  feat(cart): add CartContext and useCart hook
+
+  Introduces global cart state with add / remove / update-quantity actions.
+
+  AB#25
+  ```
+
+- Open a draft pull request against `main` when the implementation is coherent.
+- The PR title MUST begin with `[AB#25] ` (e.g. `[AB#25] Cart page and NavBar icon with persistent state`).
+- The PR description MUST include a `Related work` section with a direct link:
+
+  ```
+  Related work: AB#25 - https://dev.azure.com/ADODemoOrgFY27/KCLSDLCDemo/_workitems/edit/25
+  ```
+
+- Do not attempt to close, transition, or edit the ADO work item directly — the PR link and merge are enough for Azure Boards to update state automatically.
+
 Begin implementation by analyzing the current codebase structure and then proceed with the cart functionality development.
