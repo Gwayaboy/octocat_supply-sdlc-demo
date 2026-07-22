@@ -50,11 +50,27 @@ export class SuppliersRepository {
   }
 
   /**
+   * Convert boolean fields to integers for SQLite compatibility
+   */
+  private convertBooleanFieldsForDB(
+    supplier: Partial<Omit<Supplier, 'supplierId'>>,
+  ): Record<string, unknown> {
+    const result: Record<string, unknown> = { ...supplier };
+    if (typeof result.active === 'boolean') {
+      result.active = result.active ? 1 : 0;
+    }
+    if (typeof result.verified === 'boolean') {
+      result.verified = result.verified ? 1 : 0;
+    }
+    return result;
+  }
+
+  /**
    * Create a new supplier
    */
   async create(supplier: Omit<Supplier, 'supplierId'>): Promise<Supplier> {
     try {
-      const { sql, values } = buildInsertSQL('suppliers', supplier);
+      const { sql, values } = buildInsertSQL('suppliers', this.convertBooleanFieldsForDB(supplier));
       const result = await this.db.run(sql, values);
 
       const createdSupplier = await this.findById(result.lastID || 0);
@@ -73,7 +89,7 @@ export class SuppliersRepository {
    */
   async update(id: number, supplier: Partial<Omit<Supplier, 'supplierId'>>): Promise<Supplier> {
     try {
-      const { sql, values } = buildUpdateSQL('suppliers', supplier, 'supplier_id = ?');
+      const { sql, values } = buildUpdateSQL('suppliers', this.convertBooleanFieldsForDB(supplier), 'supplier_id = ?');
       const result = await this.db.run(sql, [...values, id]);
 
       if (result.changes === 0) {
